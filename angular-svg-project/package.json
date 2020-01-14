@@ -22,7 +22,7 @@
     "@ng-bootstrap/ng-bootstrap": "^5.1.5",
     "angular-svg-icon": "^8.0.0",
     "rxjs": "~6.4.0",
-    "svg.draggable.js": "^3.0.0",
+    "svg.draggable.js": "2.2.2",
     "svg.js": "^2.7.1",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"
