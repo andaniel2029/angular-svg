@@ -19,7 +19,10 @@
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
+    "@ng-bootstrap/ng-bootstrap": "^5.1.5",
     "rxjs": "~6.4.0",
+    "svg.draggable.js": "^3.0.0",
+    "svg.js": "^2.7.1",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"
   },
