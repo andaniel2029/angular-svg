@@ -1,4 +1,10 @@
 <div class="main-page">
   <app-data-fetch (fetchData)="getData($event)"></app-data-fetch>
+
+  <div class="img-section">
+    <div id="canvas">
+      <svg-icon [src]="switchImgUrl" #svgImg></svg-icon>
+    </div>
+  </div>
 </div>
 
