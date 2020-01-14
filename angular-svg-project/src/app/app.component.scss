@@ -1,0 +1,17 @@
+.img-section {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+
+	#canvas {
+		display: flex;
+		justify-content: center;
+	}
+
+	svg-icon {
+		display: block;
+		position: absolute;
+		z-index: -1;
+	}
+}
+
