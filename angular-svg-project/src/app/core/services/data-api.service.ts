@@ -21,4 +21,9 @@ export class DataApiService {
 		const url = `${SERVER_URL}/uicatalogs/${catalogName}`;
 		return this.http.get(url).pipe(map(res => res));
 	}
+
+	getInterfaceData(interfaceName: string): Observable<any> {
+		const url = `${SERVER_URL}/intfs/${interfaceName}`;
+		return this.http.get(url).pipe(map(res => res));
+	}
 }

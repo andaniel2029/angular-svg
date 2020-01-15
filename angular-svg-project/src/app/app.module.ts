@@ -8,12 +8,10 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { DataFetchComponent } from './data-fetch/data-fetch.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    DataFetchComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,

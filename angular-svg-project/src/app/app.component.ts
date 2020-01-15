@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, Renderer2 } from '@angular/core';
 import { ThrowStmt } from '@angular/compiler';
+import { DataApiService } from './core/services/data-api.service';
 declare const SVG:any;
 const RECT_DEFAULT_SIZE = 20;
 const OFFSET_TOP = 100;
@@ -28,10 +29,15 @@ export class AppComponent implements OnInit, AfterViewInit {
   isDataFetched: boolean = false;
   portColors: Array<string> = [];
 
-  constructor(private renderer: Renderer2) {}
+  constructor(private renderer: Renderer2, private dataService: DataApiService) {}
 
-  ngOnInit() {
-    
+  async ngOnInit() {
+    const deviceName = 'cisco5';
+    const { metadata: { name }, status: { model } } = await this.dataService.getDeviceData(deviceName).toPromise();
+    console.log('data fetched: ', name, model);
+    const categoryName = `${name}_${model}`;
+    const frontData = [];
+    const resp = await Promise.all(frontData.map(item => this.dataService.getInterfaceData(item.url).toPromise()));
   }
 
   getData(data) {
@@ -90,6 +96,10 @@ export class AppComponent implements OnInit, AfterViewInit {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+  }
+
+  flipBox() {
+    
   }
 
   ngAfterViewInit() {
