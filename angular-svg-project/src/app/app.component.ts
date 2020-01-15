@@ -43,7 +43,9 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.powerCount = data.numberOfPower;
 
       const possibleCountInRow = Math.floor((this.frontImageWidth - OFFSET_LEFT) / (RECT_DEFAULT_SIZE + PADDING_SIZE));
-      const possibleCountInColumn = Math.floor((this.frontImageHeight - OFFSET_TOP) / (RECT_DEFAULT_SIZE + PADDING_SIZE))
+      const possibleCountInColumn = Math.floor((this.frontImageHeight - OFFSET_TOP) / (RECT_DEFAULT_SIZE + PADDING_SIZE));
+
+      console.log('********', this.frontImageWidth, possibleCountInRow);
 
       let colIndex = 0;
       let rowIndex = 0;
@@ -94,7 +96,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.frontImageWidth = this.svgImg.element.nativeElement.offsetWidth;
       this.frontImageHeight = this.svgImg.element.nativeElement.offsetHeight;
-    }, 100);
+    }, 2000);
     
   }
 
