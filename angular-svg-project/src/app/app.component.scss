@@ -46,7 +46,25 @@ button {
 	width: 20px;
 	height: 20px;
 	position: absolute;
-	border: 1px solid transparent;
 	cursor: pointer;
 	background-repeat: no-repeat;
+	margin-top: 2px;
+}
+
+.icon-rear {
+	margin-top: 0;
+}
+
+.port-image, .rear-item-image {
+	width: 100%;
+	height: 100%;
+	transform: scale(1.2);
+}
+
+.filter-green {
+	filter: invert(100%) sepia(25%) saturate(4763%) hue-rotate(57deg) brightness(89%) contrast(85%);
+}
+
+.filter-red {
+	filter: invert(15%) sepia(86%) saturate(3950%) hue-rotate(1deg) brightness(84%) contrast(104%);
 }

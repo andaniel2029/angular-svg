@@ -26,7 +26,6 @@ export class AppComponent implements OnInit {
 
   isFrontPage = true;
 
-
   constructor(private renderer: Renderer2, private dataService: DataApiService) {}
 
   async ngOnInit() {
@@ -34,21 +33,24 @@ export class AppComponent implements OnInit {
     const { status: { vendor }, status: { model } } = await this.dataService.getDeviceData(deviceName).toPromise();
     const categoryName = `${vendor}__${model}`;
     const categoryData = await this.dataService.getUICatalogData(categoryName).toPromise();
+    const detailedInterfaceData = await Promise.all(categoryData.status.ui_info.front.map(item => this.dataService.getInterfaceData(`${item.name.replace(/\//g, '_')}-${DEVICE_NAME}`).toPromise()));
 
     setTimeout(() => {
       this.canvasPositionInfo  = document.getElementsByTagName('svg')[0].querySelector('rect').getBoundingClientRect();
       this.deviceImagePositionInfo = document.getElementsByTagName('svg')[0].querySelector('polygon').getBoundingClientRect();
       const UNIT_PIXEL_X = this.canvasPositionInfo.width / categoryData.status.ui_info.Dimensions.X;
       const UNIT_PIXEL_Y = this.canvasPositionInfo.height / categoryData.status.ui_info.Dimensions.Y;
-      console.log('&&&&&&&&&&', this.deviceImagePositionInfo);
-      this.interfacesData = categoryData.status.ui_info.front.map(item => ({
+      
+      this.interfacesData = categoryData.status.ui_info.front.map((item, index) => ({
         positionX: item.x * UNIT_PIXEL_X,
         positionY: item.y * UNIT_PIXEL_Y,
         widthPixel: item.width * UNIT_PIXEL_X,
         heightPixel: item.height * UNIT_PIXEL_Y,
-        backgroundImgUrl: item.orientation === 'up' ? this.greenInterfaceUrl : this.redInterfaceUrl,
+        backgroundImgUrl: `assets/${item.image}`,
+        detail: detailedInterfaceData[index],
         ...item
       }));
+
       this.rearData = categoryData.status.ui_info.rear.map(item => ({
         positionX: item.x * UNIT_PIXEL_X,
         positionY: item.y * UNIT_PIXEL_Y,
@@ -58,8 +60,6 @@ export class AppComponent implements OnInit {
         ...item
       }));
     }, 2000);
-    console.log('********', categoryData);
-    // const resp = await Promise.all(frontData.map(item => this.dataService.getInterfaceData(item.url).toPromise()));
   }
 
   async getDetailedInterfaceData(name: string) {
@@ -68,7 +68,6 @@ export class AppComponent implements OnInit {
   }
 
   async getDetailedRearItemData(item: any) {
-    console.log('33333333', item);
     switch (item.type) {
       case 'fan':
         this.selectedRearItemData = await this.dataService.getFanData(`${item.name}-${DEVICE_NAME}`).toPromise();
@@ -94,7 +93,4 @@ export class AppComponent implements OnInit {
   flipBox() {
     this.isFrontPage = !this.isFrontPage;
   }
-
-  
-
 }

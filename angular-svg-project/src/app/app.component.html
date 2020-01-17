@@ -36,14 +36,16 @@
       'left.px': interface.positionX,
       'top.px': interface.positionY,
       'width.px': interface.widthPixel,
-      'height.px': interface.heightPixel,
       'transform': interface.orientation === 'up' && 'rotate(180deg)',
-      'background-image': 'url(' + interface.backgroundImgUrl + ')',
-      'border-color': (selectedInterfaceData && selectedInterfaceData.status.shortName === interface.name) ? 'red' : 'transparent'
+      'box-shadow': (selectedInterfaceData && selectedInterfaceData.status.shortName === interface.name) ? '0 0 3px 1px #fff inset' : 'none'
     }"
     (click)="getDetailedInterfaceData(interface.name)"
     [title]=interface.shortName
   >
+    <img [src]="interface.backgroundImgUrl" alt="port" class="port-image" [ngClass]="{
+      'filter-red': interface.detail.status.operationalStatus == 'down',
+      'filter-green': interface.detail.status.operationalStatus == 'up'
+    }">
   </div>
 </div>
 <div id="canvas" 
@@ -63,11 +65,11 @@
       'top.px': item.positionY,
       'width.px': item.widthPixel,
       'height.px': item.heightPixel,
-      'background-image': 'url(' + item.backgroundImgUrl + ')',
-      'border-color': (selectedRearItemData && selectedRearItemData.status.shortname === item.name) ? 'red' : 'transparent'
+      'box-shadow': (selectedRearItemData && selectedRearItemData.status.shortname === item.name) ? '0 0 3px 1px #fff inset' : 'none'
     }"
     (click)="getDetailedRearItemData(item)"
     [title]=item.shortName
   >
+    <img *ngIf="item.name !== 'ManagementConsole'" [src]="item.backgroundImgUrl" class="rear-item-image">
   </div>
 </div>
