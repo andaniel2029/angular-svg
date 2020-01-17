@@ -1,10 +1,73 @@
 <div class="main-page">
-  <div class="btn btn-primary" (click)="flipBox()">Flip</div>
+  <button class="btn btn-primary" (click)="flipBox()">Flip</button>
 
   <div class="img-section">
-    <div id="canvas">
-      <svg-icon [src]="switchImgUrl" #svgImg></svg-icon>
-    </div>
+    <svg-icon [src]="switchImgUrl" #svgImg></svg-icon>
   </div>
+
+  <pre *ngIf="isFrontPage">{{selectedInterfaceData | json}}</pre>
+  <pre *ngIf="!isFrontPage">{{selectedRearItemData | json}}</pre>
 </div>
 
+<div id="device_image" [ngStyle]="{
+  'left.px': deviceImagePositionInfo == undefined ? 0 : deviceImagePositionInfo.left,
+  'top.px': deviceImagePositionInfo == undefined ? 0 : deviceImagePositionInfo.top,
+  'width.px': deviceImagePositionInfo == undefined ? 0 : deviceImagePositionInfo.width,
+  'height.px': deviceImagePositionInfo == undefined ? 0 : deviceImagePositionInfo.height,
+  'visibility': deviceImagePositionInfo == undefined ? 'hidden' : 'visible',
+  'transform': isFrontPage == false ? 'rotate(180deg)' : 'rotate(0deg)'
+}">
+  <img src="assets/Cisco-01.png" alt="cisco">
+</div>
+
+<div id="canvas" 
+    *ngIf="isFrontPage"
+    [ngStyle]="{
+      'left.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.left,
+      'top.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.top,
+      'width.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.width,
+      'height.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.height,
+      'visibility': canvasPositionInfo == undefined ? 'hidden' : 'visible'
+    }">
+  <div 
+    *ngFor="let interface of interfacesData" 
+    class="icon-interface" 
+    [ngStyle]="{
+      'left.px': interface.positionX,
+      'top.px': interface.positionY,
+      'width.px': interface.widthPixel,
+      'height.px': interface.heightPixel,
+      'transform': interface.orientation === 'up' && 'rotate(180deg)',
+      'background-image': 'url(' + interface.backgroundImgUrl + ')',
+      'border-color': (selectedInterfaceData && selectedInterfaceData.status.shortName === interface.name) ? 'red' : 'transparent'
+    }"
+    (click)="getDetailedInterfaceData(interface.name)"
+    [title]=interface.shortName
+  >
+  </div>
+</div>
+<div id="canvas" 
+    *ngIf="!isFrontPage" 
+    [ngStyle]="{
+      'left.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.left,
+      'top.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.top,
+      'width.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.width,
+      'height.px': canvasPositionInfo == undefined ? 0 : canvasPositionInfo.height,
+      'visibility': canvasPositionInfo == undefined ? 'hidden' : 'visible'
+  }">
+  <div 
+    *ngFor="let item of rearData" 
+    class="icon-rear" 
+    [ngStyle]="{
+      'left.px': item.positionX,
+      'top.px': item.positionY,
+      'width.px': item.widthPixel,
+      'height.px': item.heightPixel,
+      'background-image': 'url(' + item.backgroundImgUrl + ')',
+      'border-color': (selectedRearItemData && selectedRearItemData.status.shortname === item.name) ? 'red' : 'transparent'
+    }"
+    (click)="getDetailedRearItemData(item)"
+    [title]=item.shortName
+  >
+  </div>
+</div>

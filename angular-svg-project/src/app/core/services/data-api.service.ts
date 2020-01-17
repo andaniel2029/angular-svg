@@ -26,4 +26,14 @@ export class DataApiService {
 		const url = `${SERVER_URL}/intfs/${interfaceName}`;
 		return this.http.get(url).pipe(map(res => res));
 	}
+
+	getFanData(fanName: string): Observable<any> {
+		const url = `${SERVER_URL}/fans/${fanName}`;
+		return this.http.get(url).pipe(map(res => res));
+	}
+
+	getPowerSupplyData(powerSupplyName: string): Observable<any> {
+		const url = `${SERVER_URL}/powersupplys/${powerSupplyName}`;
+		return this.http.get(url).pipe(map(res => res));
+	}
 }
