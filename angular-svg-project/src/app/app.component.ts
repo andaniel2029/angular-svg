@@ -60,7 +60,6 @@ export class AppComponent implements OnInit {
         backgroundImgUrl: `assets/${item.image}`,
         ...item
       }));
-      console.log('rear data: ', this.rearData, 'port data: ', this.interfacesData);
     }, 2000);
   }
 
