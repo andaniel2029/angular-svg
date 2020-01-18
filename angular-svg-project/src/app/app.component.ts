@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
   canvasPositionInfo: any = undefined;
   deviceImagePositionInfo: any = undefined;
 
-  switchImgUrl: string = 'assets/access-1.svg';
+  switchImgUrl: string = 'assets/access.svg';
   redInterfaceUrl: string = 'assets/copperInterface-red.svg';
   greenInterfaceUrl: string = 'assets/copperInterface-green.svg';
 
@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
     const { status: { vendor }, status: { model } } = await this.dataService.getDeviceData(deviceName).toPromise();
     const categoryName = `${vendor}__${model}`;
     const categoryData = await this.dataService.getUICatalogData(categoryName).toPromise();
+    this.switchImgUrl = `assets/${categoryData.status.ui_info.device_image}`;
     const detailedInterfaceData = await Promise.all(categoryData.status.ui_info.front.map(item => this.dataService.getInterfaceData(`${item.name.replace(/\//g, '_')}-${DEVICE_NAME}`).toPromise()));
 
     setTimeout(() => {
@@ -59,6 +60,7 @@ export class AppComponent implements OnInit {
         backgroundImgUrl: `assets/${item.image}`,
         ...item
       }));
+      console.log('rear data: ', this.rearData, 'port data: ', this.interfacesData);
     }, 2000);
   }
 

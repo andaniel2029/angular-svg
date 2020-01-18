@@ -1,5 +1,5 @@
 <div class="main-page">
-  <button class="btn btn-primary" (click)="flipBox()">Flip</button>
+  <div class="flip-icon" (click)="flipBox()"></div>
 
   <div class="img-section">
     <svg-icon [src]="switchImgUrl" #svgImg></svg-icon>
@@ -65,7 +65,7 @@
       'top.px': item.positionY,
       'width.px': item.widthPixel,
       'height.px': item.heightPixel,
-      'box-shadow': (selectedRearItemData && selectedRearItemData.status.shortname === item.name) ? '0 0 3px 1px #fff inset' : 'none'
+      'box-shadow': (selectedRearItemData && selectedRearItemData.status.shortName === item.name) ? '0 0 3px 1px #fff inset' : 'none'
     }"
     (click)="getDetailedRearItemData(item)"
     [title]=item.shortName
