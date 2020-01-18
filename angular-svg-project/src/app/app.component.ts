@@ -1,83 +1,85 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, Renderer2 } from '@angular/core';
-import { ThrowStmt } from '@angular/compiler';
-declare const SVG:any;
-const RECT_DEFAULT_SIZE = 20;
-const OFFSET_TOP = 100;
-const OFFSET_LEFT = 30;
-const PADDING_SIZE = 10;
+import { Component, OnInit, ViewChild, Renderer2 } from '@angular/core';
+import { DataApiService } from './core/services/data-api.service';
+const DEVICE_NAME = 'cisco5';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
   @ViewChild('svgImg', { static: false })  
   svgImg: any;
-
   title = 'angular-svg-project';
-  portCount: number;
-  fanCount: number;
-  powerCount: number;
 
-  frontImageWidth: number;
-  frontImageHeight: number;
+  canvasPositionInfo: any = undefined;
+  deviceImagePositionInfo: any = undefined;
 
-  switchImgUrl: string = 'assets/switch-svg.svg';
+  switchImgUrl: string = 'assets/access.svg';
+  redInterfaceUrl: string = 'assets/copperInterface-red.svg';
+  greenInterfaceUrl: string = 'assets/copperInterface-green.svg';
 
-  isDataFetched: boolean = false;
-  portColors: Array<string> = [];
+  interfacesData: Array<any> = [];
+  rearData: Array<any> = [];
+  selectedInterfaceData: any;
+  selectedRearItemData: any;
 
-  constructor(private renderer: Renderer2) {}
+  isFrontPage = true;
 
-  ngOnInit() {
-    
+  constructor(private renderer: Renderer2, private dataService: DataApiService) {}
+
+  async ngOnInit() {
+    const deviceName = 'cisco5';
+    const { status: { vendor }, status: { model } } = await this.dataService.getDeviceData(deviceName).toPromise();
+    const categoryName = `${vendor}__${model}`;
+    const categoryData = await this.dataService.getUICatalogData(categoryName).toPromise();
+    this.switchImgUrl = `assets/${categoryData.status.ui_info.device_image}`;
+    const detailedInterfaceData = await Promise.all(categoryData.status.ui_info.front.map(item => this.dataService.getInterfaceData(`${item.name.replace(/\//g, '_')}-${DEVICE_NAME}`).toPromise()));
+
+    setTimeout(() => {
+      this.canvasPositionInfo  = document.getElementsByTagName('svg')[0].querySelector('rect').getBoundingClientRect();
+      this.deviceImagePositionInfo = document.getElementsByTagName('svg')[0].querySelector('polygon').getBoundingClientRect();
+      const UNIT_PIXEL_X = this.canvasPositionInfo.width / categoryData.status.ui_info.Dimensions.X;
+      const UNIT_PIXEL_Y = this.canvasPositionInfo.height / categoryData.status.ui_info.Dimensions.Y;
+      
+      this.interfacesData = categoryData.status.ui_info.front.map((item, index) => ({
+        positionX: item.x * UNIT_PIXEL_X,
+        positionY: item.y * UNIT_PIXEL_Y,
+        widthPixel: item.width * UNIT_PIXEL_X,
+        heightPixel: item.height * UNIT_PIXEL_Y,
+        backgroundImgUrl: `assets/${item.image}`,
+        detail: detailedInterfaceData[index],
+        ...item
+      }));
+
+      this.rearData = categoryData.status.ui_info.rear.map(item => ({
+        positionX: item.x * UNIT_PIXEL_X,
+        positionY: item.y * UNIT_PIXEL_Y,
+        widthPixel: item.width * UNIT_PIXEL_X,
+        heightPixel: item.height * UNIT_PIXEL_Y,
+        backgroundImgUrl: `assets/${item.image}`,
+        ...item
+      }));
+      console.log('rear data: ', this.rearData, 'port data: ', this.interfacesData);
+    }, 2000);
   }
 
-  getData(data) {
-    if (data) {
-      this.isDataFetched = true;
+  async getDetailedInterfaceData(name: string) {
+    const interfaceName = name.replace(/\//g, '_');
+    this.selectedInterfaceData = await this.dataService.getInterfaceData(`${interfaceName}-${DEVICE_NAME}`).toPromise();
+  }
 
-      this.portCount = data.numberOfPorts;
-      this.fanCount = data.numberOfFans;
-      this.powerCount = data.numberOfPower;
-
-      const possibleCountInRow = Math.floor((this.frontImageWidth - OFFSET_LEFT) / (RECT_DEFAULT_SIZE + PADDING_SIZE));
-      const possibleCountInColumn = Math.floor((this.frontImageHeight - OFFSET_TOP) / (RECT_DEFAULT_SIZE + PADDING_SIZE))
-
-      let colIndex = 0;
-      let rowIndex = 0;
-
-      if (this.portCount > (possibleCountInColumn * possibleCountInRow)) {
-        window.alert("can't draw rects because of limited space");
-      } else {
-
-        const canvas = document.getElementById('canvas');
-        const svg = Array.from(canvas.children).find(el => el.tagName === 'svg');
-        if (svg) {
-          this.renderer.removeChild(canvas, svg);
-        }
-
-        const draw = SVG('canvas').size(this.frontImageWidth, this.frontImageHeight);
-        for (let index = 0; index < this.portCount; index++) {
-          
-          if (OFFSET_LEFT + colIndex * (RECT_DEFAULT_SIZE + PADDING_SIZE + 1) > this.frontImageWidth) {
-            colIndex = 0;
-            rowIndex++
-          }
-          const positionX = OFFSET_LEFT + colIndex * (RECT_DEFAULT_SIZE + PADDING_SIZE);
-          const positionY = OFFSET_TOP + rowIndex * (RECT_DEFAULT_SIZE + PADDING_SIZE);
-          const color = this.generateRandomColor();
-          const rect = draw.rect(RECT_DEFAULT_SIZE, RECT_DEFAULT_SIZE).fill(color).move(positionX, positionY);
-          rect.draggable();
-
-          rect.on('click', () => {
-            rect.fill({ color: this.generateRandomColor() });
-          });
-
-          colIndex++;
-        }
-      }
+  async getDetailedRearItemData(item: any) {
+    switch (item.type) {
+      case 'fan':
+        this.selectedRearItemData = await this.dataService.getFanData(`${item.name}-${DEVICE_NAME}`).toPromise();
+        break;
+      case 'powersupply':
+        this.selectedRearItemData = await this.dataService.getPowerSupplyData(`${item.name}-${DEVICE_NAME}`).toPromise();
+        break;
+      default:
+        const itemName = item.name.replace(/\//g, '_');
+        this.selectedRearItemData = await this.dataService.getInterfaceData(`${itemName}-${DEVICE_NAME}`).toPromise();
     }
   }
 
@@ -90,12 +92,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     return color;
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.frontImageWidth = this.svgImg.element.nativeElement.offsetWidth;
-      this.frontImageHeight = this.svgImg.element.nativeElement.offsetHeight;
-    }, 100);
-    
+  flipBox() {
+    this.isFrontPage = !this.isFrontPage;
   }
-
 }
