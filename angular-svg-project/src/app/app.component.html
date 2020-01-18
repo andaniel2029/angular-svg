@@ -64,12 +64,13 @@
       'left.px': item.positionX,
       'top.px': item.positionY,
       'width.px': item.widthPixel,
-      'height.px': item.heightPixel,
-      'box-shadow': (selectedRearItemData && selectedRearItemData.status.shortName === item.name) ? '0 0 3px 1px #fff inset' : 'none'
+      'height.px': item.heightPixel
     }"
-    (click)="getDetailedRearItemData(item)"
+    
     [title]=item.shortName
   >
-    <img *ngIf="item.name !== 'ManagementConsole'" [src]="item.backgroundImgUrl" class="rear-item-image">
+    <img *ngIf="item.name !== 'ManagementConsole'" [src]="item.backgroundImgUrl" class="rear-item-image" (click)="getDetailedRearItemData(item)" [ngStyle]="{
+      'box-shadow': (selectedRearItemData && selectedRearItemData.status.shortName === item.name) ? '0 0 3px 1px #fff' : 'none'
+    }">
   </div>
 </div>
